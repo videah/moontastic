@@ -60,9 +60,8 @@ end
 
 function basics.Divider:set_colors(prev, next)
 
-	if next and next.bg then self.bg = next.bg else self.bg = basics.Padding.bg end
-	if prev and prev.bg then self.fg = prev.bg else self.fg = basics.Padding.bg end
-	self.fg = self.fg or self.bg
+	if next.bg then self.bg = next.bg else self.bg = basics.Padding:new(0).bg end
+	if prev.bg then self.fg = prev.bg else self.fg = basics.Padding:new(0).bg end
 	self.fg = string.gsub(self.fg, 'setab', 'setaf')
 
 end
