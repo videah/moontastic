@@ -1,0 +1,17 @@
+Main "moontastic.lua"
+
+Module "themes.arch" "themes/arch.lua"
+Module "config" "config.lua"
+
+Module "utils.middleclass" "utils/middleclass.lua"
+Module "utils.sys" "utils/sys.lua"
+Module "utils.colors" "utils/colors.lua"
+Module "utils.glyphs" "utils/glyphs.lua"
+Module "utils.table" "utils/table.lua"
+Module "utils.string" "utils/string.lua"
+
+Module "segments.sysinfo" "segments/sysinfo.lua"
+Module "segments.basics" "segments/basics.lua"
+Module "segments.init" "segments/init.lua"
+
+Output "moontastic.squish.lua"

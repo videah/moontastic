@@ -1,0 +1,2 @@
+squish
+sed -i "1i #!/bin/env luajit" moontastic.squish.lua
