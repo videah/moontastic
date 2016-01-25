@@ -28,6 +28,7 @@ local class = require 'utils.middleclass'
 
 local basics = require 'segments.basics'
 local sysinfo = require 'segments.sysinfo'
+local git = require 'segments.git'
 
 local sys = require 'utils.sys'
 
@@ -221,6 +222,8 @@ addLeftSegment(sysinfo.UserAtHost)
 -- addLeftSegment(basics.ExitCode)
 addLeftSegment(basics.Divider)
 
+addRightSegment(basics.Divider)
+addRightSegment(git.Git)
 addRightSegment(basics.Divider)
 addRightSegment(sysinfo.Time)
 

@@ -39,3 +39,7 @@ function string.split(str, sep)
 	end
 	return t
 end
+
+function string.strip(str)
+	return str:match( "^%s*(.-)%s*$" )
+end
