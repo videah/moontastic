@@ -80,7 +80,7 @@ function basics.ExitCode:init(...)
 
 	self.text = ' ' .. glyphs.CROSS .. ' '
 
-	if arg[2] == '0' then
+	if arg[1] == '0' then
 		self.active = false
 	end
 

@@ -3128,7 +3128,7 @@ function basics.ExitCode:init(...)
 
 	self.text = ' ' .. glyphs.CROSS .. ' '
 
-	if arg[2] == '0' then
+	if arg[1] == '0' then
 		self.active = false
 	end
 
@@ -3182,7 +3182,6 @@ local p = require 'posix.unistd'
 local colors = require 'utils.colors'
 local sys = require 'utils.sys'
 local glyphs = require 'utils.glyphs'
-local re = require 'utils.regex'
 local theme = sys.get_current_theme()
 
 local Segment = require 'segments.init'
@@ -3219,7 +3218,7 @@ end
 function fs.ReadOnly:init(cwd)
 
 	self.text = ' ' .. glyphs.WRITE_ONLY .. ' '
-	
+
 	if p.access(cwd, "w") then
 		self.active = false
 	end
