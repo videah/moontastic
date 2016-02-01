@@ -30,6 +30,7 @@ local basics = require 'segments.basics'
 local sysinfo = require 'segments.sysinfo'
 local git = require 'segments.git'
 local fs = require 'segments.filesystem'
+local network = require 'segments.network'
 
 local sys = require 'utils.sys'
 
@@ -219,6 +220,8 @@ local function addLastSegment(segment, arg)
 end
 
 addLeftSegment(sysinfo.UserAtHost)
+addLeftSegment(basics.Divider)
+addLeftSegment(network.Ssh)
 addLeftSegment(basics.Divider)
 addLeftSegment(fs.CurrentDir, prompt.cwd)
 addLeftSegment(basics.Divider)

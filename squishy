@@ -16,5 +16,6 @@ Module "segments.git" "segments/git.lua"
 Module "segments.sysinfo" "segments/sysinfo.lua"
 Module "segments.basics" "segments/basics.lua"
 Module "segments.filesystem" "segments/filesystem.lua"
+Module "segments.network" "segments/network.lua"
 
 Output "moontastic.squish.lua"
