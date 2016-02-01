@@ -43,3 +43,7 @@ end
 function string.strip(str)
 	return str:match( "^%s*(.-)%s*$" )
 end
+
+function string.basename(str)
+	return string.gsub(str, "(.*/)(.*)", "%2")
+end

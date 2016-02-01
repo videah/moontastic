@@ -339,6 +339,7 @@ package.preload['utils.sys'] = (function (...)
 require 'utils.string'
 
 local config = require 'config'
+local lfs = require 'lfs'
 
 local sys = {}
 
@@ -384,6 +385,14 @@ function sys.print_warning(text)
 
 end
 
+function sys.get_valid_cwd()
+
+	local cwd = lfs.currentdir()
+
+	return cwd
+
+end
+
 function sys.get_terminal_columns_n()
 
 	local columns = string.split(io.popen('stty size', 'r'):read())[2]
@@ -397,10 +406,10 @@ end
 
 function sys.get_hostname()
 
-	local f = io.popen ("/bin/hostname")
-	local hostname = f:read("*a") or ""
+	local f = io.popen('/bin/hostname')
+	local hostname = f:read('*a') or ''
 	f:close()
-	hostname = string.gsub(hostname, "\n$", "")
+	hostname = string.gsub(hostname, '\n$', '')
 	return hostname
 
 end
@@ -653,6 +662,10 @@ end
 
 function string.strip(str)
 	return str:match( "^%s*(.-)%s*$" )
+end
+
+function string.basename(str)
+	return string.gsub(str, "(.*/)(.*)", "%2")
 end end)
 package.preload['utils.regex'] = (function (...)
 -- luaregex.lua  ver.130911
@@ -2694,6 +2707,85 @@ end
 
 -- export re
 return re end)
+package.preload['segments.init'] = (function (...)
+-- The MIT License (MIT)
+
+-- Copyright (c) 2016 Ruairidh Carmichael - ruairidhcarmichael@live.co.uk
+
+-- Permission is hereby granted, free of charge, to any person obtaining a copy
+-- of this software and associated documentation files (the "Software"), to deal
+-- in the Software without restriction, including without limitation the rights
+-- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+-- copies of the Software, and to permit persons to whom the Software is
+-- furnished to do so, subject to the following conditions:
+
+-- The above copyright notice and this permission notice shall be included in all
+-- copies or substantial portions of the Software.
+
+-- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+-- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+-- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+-- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+-- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+-- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+-- SOFTWARE.
+
+require 'utils.table'
+
+local class = require 'utils.middleclass'
+local colors = require 'utils.colors'
+
+local config = require 'config'
+
+local Segment = class('Segment')
+
+function Segment:initialize(...)
+
+	local class_name = self.class.name:lower()
+	local names = table.set({'newline', 'root', 'divider', 'padding'})
+
+	if names[class_name] then
+		self.active = true
+	else
+		self.active = config.SEGMENTS[class_name] or false
+	end
+
+	if self.active then
+		self:init(...)
+	end
+
+end
+
+function Segment:init()
+
+	--pass
+
+end
+
+function Segment:render()
+
+	local output = {}
+	table.insert(output, self.bg)
+	table.insert(output, self.fg)
+	table.insert(output, self.text)
+
+	if self.bg or self.fg then
+		table.insert(output, colors.reset())
+	else
+		table.insert(output, '')
+	end
+
+	return table.concat(output, '')
+
+end
+
+function Segment:length()
+
+	return self.text:len()
+
+end
+
+return Segment end)
 package.preload['segments.git'] = (function (...)
 -- The MIT License (MIT)
 
@@ -2732,7 +2824,7 @@ local Segment = require 'segments.init'
 local git = {}
 
 git.Git = class('Git', Segment)
-function git.Git:Initialize(...)
+function git.Git:initialize(...)
 
 	Segment.initialize(self, ...)
 
@@ -3028,11 +3120,11 @@ function basics.ExitCode:initialize(...)
 	Segment.initialize(self, ...)
 
 	self.bg = colors.background(theme.EXITCODE_BG)
-	self.fg = colors.background(theme.EXITCODE_FG)
+	self.fg = colors.foreground(theme.EXITCODE_FG)
 
 end
 
-function basics.ExitCode:init()
+function basics.ExitCode:init(...)
 
 	self.text = ' ' .. glyphs.CROSS .. ' '
 
@@ -3058,7 +3150,7 @@ function basics.Padding:init(amount)
 end
 
 return basics end)
-package.preload['segments.init'] = (function (...)
+package.preload['segments.filesystem'] = (function (...)
 -- The MIT License (MIT)
 
 -- Copyright (c) 2016 Ruairidh Carmichael - ruairidhcarmichael@live.co.uk
@@ -3081,62 +3173,83 @@ package.preload['segments.init'] = (function (...)
 -- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 -- SOFTWARE.
 
-require 'utils.table'
+require 'utils.string'
 
 local class = require 'utils.middleclass'
+local lfs = require 'lfs'
+local p = require 'posix.unistd'
+
 local colors = require 'utils.colors'
+local sys = require 'utils.sys'
+local glyphs = require 'utils.glyphs'
+local re = require 'utils.regex'
+local theme = sys.get_current_theme()
 
-local config = require 'config'
+local Segment = require 'segments.init'
 
-local Segment = class('Segment')
+local fs = {}
 
-function Segment:initialize(...)
+fs.CurrentDir = class('CurrentDir', Segment)
+function fs.CurrentDir:initialize(...)
 
-	local class_name = self.class.name:lower()
-	local names = table.set({'newline', 'root', 'divider', 'padding'})
+	Segment.initialize(self, ...)
 
-	if names[class_name] then
-		self.active = true
-	else
-		self.active = config.SEGMENTS[class_name] or false
+	self.bg = colors.background(theme.CURRENTDIR_BG)
+	self.fg = colors.foreground(theme.CURRENTDIR_FG)
+
+end
+
+function fs.CurrentDir:init(cwd)
+
+	local home = os.getenv('HOME')
+	self.text = string.gsub(cwd, home, '~')
+
+end
+
+fs.ReadOnly = class('ReadOnly', Segment)
+function fs.ReadOnly:initialize(...)
+
+	Segment.initialize(self, ...)
+
+	self.bg = colors.background(theme.READONLY_BG)
+	self.fg = colors.foreground(theme.READONLY_FG)
+
+end
+
+function fs.ReadOnly:init(cwd)
+
+	self.text = ' ' .. glyphs.WRITE_ONLY .. ' '
+	
+	if p.access(cwd, "w") then
+		self.active = false
 	end
 
-	if self.active then
-		self:init(...)
+end
+
+fs.Venv = class('Venv', Segment)
+function fs.Venv:initialize(...)
+
+	Segment.initialize(self, ...)
+
+	self.bg = colors.background(theme.VENV_BG)
+	self.fg = colors.foreground(theme.VENV_FG)
+
+end
+
+function fs.Venv:init(...)
+
+	local env = os.getenv('VIRTUAL_ENV')
+	if not env then
+		self.active = false
+		return
 	end
 
-end
-
-function Segment:init()
-
-	--pass
+	local env_name = string.basename(env)
+	self.text = glyphs.VIRTUAL_ENV .. ' ' .. env_name 
 
 end
 
-function Segment:render()
-
-	local output = {}
-	table.insert(output, self.bg)
-	table.insert(output, self.fg)
-	table.insert(output, self.text)
-
-	if self.bg or self.fg then
-		table.insert(output, colors.reset())
-	else
-		table.insert(output, '')
-	end
-
-	return table.concat(output, '')
-
-end
-
-function Segment:length()
-
-	return self.text:len()
-
-end
-
-return Segment end)
+return fs end)
 
 -- The MIT License (MIT)
 
@@ -3167,6 +3280,7 @@ local class = require 'utils.middleclass'
 local basics = require 'segments.basics'
 local sysinfo = require 'segments.sysinfo'
 local git = require 'segments.git'
+local fs = require 'segments.filesystem'
 
 local sys = require 'utils.sys'
 
@@ -3174,7 +3288,7 @@ local Prompt = class('Prompt')
 
 function Prompt:initialize()
 
-	self.cwd = nil
+	self.cwd = sys.get_valid_cwd()
 
 	self.first_line_left = {}
 	self.first_line_right = {}
@@ -3242,13 +3356,13 @@ function Prompt:_clean_segments()
 
 		local to_remove = {}
 		for i=1, #segments - 1 do
-			if (segments[i].class.super.name == basics.Divider.name) and (segments[i+1].class.super.name == basics.Divider.name) then
+			if (segments[i].class.name == basics.Divider.name) and (segments[i+1].class.name == basics.Divider.name) then
 				table.insert(to_remove, i)
 			end
 		end
 
 		for counter, i in ipairs(to_remove) do
-			table.remove(segments, i - counter)
+			table.remove(segments, i - counter + 1)
 		end
 
 		return segments
@@ -3338,7 +3452,7 @@ function Prompt:_color_dividers(segments)
 
 end
 
-prompt = Prompt:new()
+local prompt = Prompt:new()
 
 local function addLeftSegment(segment, arg)
 	arg = arg or nil
@@ -3356,12 +3470,18 @@ local function addLastSegment(segment, arg)
 end
 
 addLeftSegment(sysinfo.UserAtHost)
--- addLeftSegment(basics.Divider)
--- addLeftSegment(basics.ExitCode)
+addLeftSegment(basics.Divider)
+addLeftSegment(fs.CurrentDir, prompt.cwd)
+addLeftSegment(basics.Divider)
+addLeftSegment(fs.ReadOnly, prompt.cwd)
+addLeftSegment(basics.Divider)
+addLeftSegment(basics.ExitCode)
 addLeftSegment(basics.Divider)
 
 addRightSegment(basics.Divider)
 addRightSegment(git.Git)
+addRightSegment(basics.Divider)
+addRightSegment(fs.Venv)
 addRightSegment(basics.Divider)
 addRightSegment(sysinfo.Time)
 

@@ -35,7 +35,7 @@ local Segment = require 'segments.init'
 local git = {}
 
 git.Git = class('Git', Segment)
-function git.Git:Initialize(...)
+function git.Git:initialize(...)
 
 	Segment.initialize(self, ...)
 

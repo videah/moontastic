@@ -23,82 +23,77 @@
 require 'utils.string'
 
 local class = require 'utils.middleclass'
+local lfs = require 'lfs'
+local p = require 'posix.unistd'
 
 local colors = require 'utils.colors'
-local glyphs = require 'utils.glyphs'
 local sys = require 'utils.sys'
-
+local glyphs = require 'utils.glyphs'
+local re = require 'utils.regex'
 local theme = sys.get_current_theme()
 
 local Segment = require 'segments.init'
 
-local basics = {}
+local fs = {}
 
-basics.NewLine = class('NewLine', Segment)
-function basics.NewLine:initialize(...)
-
-	Segment.initialize(self, ...)
-	self.text = '\r\n'
-
-end
-
-basics.Root = class('Root', Segment)
-function basics.Root:initialize(...)
-
-	Segment.initialize(self, ...)
-	self.text = '\\$ '
-
-end
-
-basics.Divider = class('Divider', Segment)
-function basics.Divider:initialize(...)
-
-	Segment.initialize(self, ...)
-	self.text = glyphs.DIVIDER
-
-end
-
-function basics.Divider:set_colors(prev, next)
-
-	if next.bg then self.bg = next.bg else self.bg = basics.Padding:new(0).bg end
-	if prev.bg then self.fg = prev.bg else self.fg = basics.Padding:new(0).bg end
-	self.fg = string.gsub(self.fg, 'setab', 'setaf')
-
-end
-
-basics.ExitCode = class('ExitCode', Segment)
-function basics.ExitCode:initialize(...)
+fs.CurrentDir = class('CurrentDir', Segment)
+function fs.CurrentDir:initialize(...)
 
 	Segment.initialize(self, ...)
 
-	self.bg = colors.background(theme.EXITCODE_BG)
-	self.fg = colors.foreground(theme.EXITCODE_FG)
+	self.bg = colors.background(theme.CURRENTDIR_BG)
+	self.fg = colors.foreground(theme.CURRENTDIR_FG)
 
 end
 
-function basics.ExitCode:init(...)
+function fs.CurrentDir:init(cwd)
 
-	self.text = ' ' .. glyphs.CROSS .. ' '
+	local home = os.getenv('HOME')
+	self.text = string.gsub(cwd, home, '~')
 
-	if arg[2] == '0' then
+end
+
+fs.ReadOnly = class('ReadOnly', Segment)
+function fs.ReadOnly:initialize(...)
+
+	Segment.initialize(self, ...)
+
+	self.bg = colors.background(theme.READONLY_BG)
+	self.fg = colors.foreground(theme.READONLY_FG)
+
+end
+
+function fs.ReadOnly:init(cwd)
+
+	self.text = ' ' .. glyphs.WRITE_ONLY .. ' '
+	
+	if p.access(cwd, "w") then
 		self.active = false
 	end
 
 end
 
-basics.Padding = class('Padding', Segment)
-function basics.Padding:initialize(...)
+fs.Venv = class('Venv', Segment)
+function fs.Venv:initialize(...)
 
 	Segment.initialize(self, ...)
 
-	self.bg = colors.background(theme.PADDING_BG)
+	self.bg = colors.background(theme.VENV_BG)
+	self.fg = colors.foreground(theme.VENV_FG)
 
 end
 
-function basics.Padding:init(amount)
+function fs.Venv:init(...)
 
-	self.text = string.ljust(self.text, ' ', amount)
+	local env = os.getenv('VIRTUAL_ENV')
+	if not env then
+		self.active = false
+		return
+	end
+
+	local env_name = string.basename(env)
+	self.text = glyphs.VIRTUAL_ENV .. ' ' .. env_name 
 
 end
 
-return basics
+return fs

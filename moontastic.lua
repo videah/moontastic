@@ -29,6 +29,7 @@ local class = require 'utils.middleclass'
 local basics = require 'segments.basics'
 local sysinfo = require 'segments.sysinfo'
 local git = require 'segments.git'
+local fs = require 'segments.filesystem'
 
 local sys = require 'utils.sys'
 
@@ -36,7 +37,7 @@ local Prompt = class('Prompt')
 
 function Prompt:initialize()
 
-	self.cwd = nil
+	self.cwd = sys.get_valid_cwd()
 
 	self.first_line_left = {}
 	self.first_line_right = {}
@@ -104,13 +105,13 @@ function Prompt:_clean_segments()
 
 		local to_remove = {}
 		for i=1, #segments - 1 do
-			if (segments[i].class.super.name == basics.Divider.name) and (segments[i+1].class.super.name == basics.Divider.name) then
+			if (segments[i].class.name == basics.Divider.name) and (segments[i+1].class.name == basics.Divider.name) then
 				table.insert(to_remove, i)
 			end
 		end
 
 		for counter, i in ipairs(to_remove) do
-			table.remove(segments, i - counter)
+			table.remove(segments, i - counter + 1)
 		end
 
 		return segments
@@ -200,7 +201,7 @@ function Prompt:_color_dividers(segments)
 
 end
 
-prompt = Prompt:new()
+local prompt = Prompt:new()
 
 local function addLeftSegment(segment, arg)
 	arg = arg or nil
@@ -218,12 +219,18 @@ local function addLastSegment(segment, arg)
 end
 
 addLeftSegment(sysinfo.UserAtHost)
--- addLeftSegment(basics.Divider)
--- addLeftSegment(basics.ExitCode)
+addLeftSegment(basics.Divider)
+addLeftSegment(fs.CurrentDir, prompt.cwd)
+addLeftSegment(basics.Divider)
+addLeftSegment(fs.ReadOnly, prompt.cwd)
+addLeftSegment(basics.Divider)
+addLeftSegment(basics.ExitCode)
 addLeftSegment(basics.Divider)
 
 addRightSegment(basics.Divider)
 addRightSegment(git.Git)
+addRightSegment(basics.Divider)
+addRightSegment(fs.Venv)
 addRightSegment(basics.Divider)
 addRightSegment(sysinfo.Time)
 

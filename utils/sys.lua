@@ -23,6 +23,7 @@
 require 'utils.string'
 
 local config = require 'config'
+local lfs = require 'lfs'
 
 local sys = {}
 
@@ -68,6 +69,14 @@ function sys.print_warning(text)
 
 end
 
+function sys.get_valid_cwd()
+
+	local cwd = lfs.currentdir()
+
+	return cwd
+
+end
+
 function sys.get_terminal_columns_n()
 
 	local columns = string.split(io.popen('stty size', 'r'):read())[2]
@@ -81,10 +90,10 @@ end
 
 function sys.get_hostname()
 
-	local f = io.popen ("/bin/hostname")
-	local hostname = f:read("*a") or ""
+	local f = io.popen('/bin/hostname')
+	local hostname = f:read('*a') or ''
 	f:close()
-	hostname = string.gsub(hostname, "\n$", "")
+	hostname = string.gsub(hostname, '\n$', '')
 	return hostname
 
 end
