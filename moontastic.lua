@@ -140,7 +140,7 @@ end
 
 function Prompt:_compute_padding_length_first_line()
 
-	local right_starts_w_divider = (self.first_line_right and self.first_line_right[1].class.super.name == basics.Divider.name)
+	local right_starts_w_divider = (self.first_line_right and self.first_line_right[1].class.name == basics.Divider.name)
 
 	local cols = sys.get_terminal_columns_n()
 

@@ -22,6 +22,8 @@
 
 require 'utils.table'
 
+local u = require 'utils.utf8'
+
 local class = require 'utils.middleclass'
 local colors = require 'utils.colors'
 
@@ -71,7 +73,7 @@ end
 
 function Segment:length()
 
-	return self.text:len()
+	return u.len(self.text)
 
 end
 

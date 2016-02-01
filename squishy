@@ -10,6 +10,7 @@ Module "utils.glyphs" "utils/glyphs.lua"
 Module "utils.table" "utils/table.lua"
 Module "utils.string" "utils/string.lua"
 Module "utils.regex" "utils/regex.lua"
+Module "utils.utf8" "utils/utf8.lua"
 
 Module "segments.init" "segments/init.lua"
 Module "segments.git" "segments/git.lua"
