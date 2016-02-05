@@ -1,22 +1,21 @@
+Module "moontastic.themes.arch" "themes/arch.lua"
+Module "moontastic.config" "config.lua"
+
+Module "moontastic.utils.sys" "utils/sys.lua"
+Module "moontastic.utils.colors" "utils/colors.lua"
+Module "moontastic.utils.glyphs" "utils/glyphs.lua"
+Module "moontastic.utils.table" "utils/table.lua"
+Module "moontastic.utils.string" "utils/string.lua"
+Module "moontastic.utils.regex" "utils/regex.lua"
+Module "moontastic.utils.utf8" "utils/utf8.lua"
+
+Module "moontastic.segments.init" "segments/init.lua"
+Module "moontastic.segments.git" "segments/git.lua"
+Module "moontastic.segments.sysinfo" "segments/sysinfo.lua"
+Module "moontastic.segments.basics" "segments/basics.lua"
+Module "moontastic.segments.filesystem" "segments/filesystem.lua"
+Module "moontastic.segments.network" "segments/network.lua"
+
 Main "moontastic.lua"
-
-Module "themes.arch" "themes/arch.lua"
-Module "config" "config.lua"
-
-Module "utils.middleclass" "utils/middleclass.lua"
-Module "utils.sys" "utils/sys.lua"
-Module "utils.colors" "utils/colors.lua"
-Module "utils.glyphs" "utils/glyphs.lua"
-Module "utils.table" "utils/table.lua"
-Module "utils.string" "utils/string.lua"
-Module "utils.regex" "utils/regex.lua"
-Module "utils.utf8" "utils/utf8.lua"
-
-Module "segments.init" "segments/init.lua"
-Module "segments.git" "segments/git.lua"
-Module "segments.sysinfo" "segments/sysinfo.lua"
-Module "segments.basics" "segments/basics.lua"
-Module "segments.filesystem" "segments/filesystem.lua"
-Module "segments.network" "segments/network.lua"
 
 Output "moontastic.squish.lua"

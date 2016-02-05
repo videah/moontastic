@@ -20,18 +20,18 @@
 -- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 -- SOFTWARE.
 
-require 'utils.string'
+require 'moontastic.utils.string'
 
-local class = require 'utils.middleclass'
+local class = require 'middleclass'
 local lfs = require 'lfs'
 local p = require 'posix.unistd'
 
-local colors = require 'utils.colors'
-local sys = require 'utils.sys'
-local glyphs = require 'utils.glyphs'
+local colors = require 'moontastic.utils.colors'
+local sys = require 'moontastic.utils.sys'
+local glyphs = require 'moontastic.utils.glyphs'
 local theme = sys.get_current_theme()
 
-local Segment = require 'segments.init'
+local Segment = require 'moontastic.segments.init'
 
 local fs = {}
 

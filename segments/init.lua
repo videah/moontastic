@@ -20,14 +20,14 @@
 -- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 -- SOFTWARE.
 
-require 'utils.table'
+require 'moontastic.utils.table'
 
-local u = require 'utils.utf8'
+local class = require 'middleclass'
 
-local class = require 'utils.middleclass'
-local colors = require 'utils.colors'
+local u = require 'moontastic.utils.utf8'
+local colors = require 'moontastic.utils.colors'
 
-local config = require 'config'
+local config = require 'moontastic.config'
 
 local Segment = class('Segment')
 

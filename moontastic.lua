@@ -22,17 +22,17 @@
 -- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 -- SOFTWARE.
 
-require 'utils.table'
+require 'moontastic.utils.table'
 
-local class = require 'utils.middleclass'
+local class = require 'middleclass'
 
-local basics = require 'segments.basics'
-local sysinfo = require 'segments.sysinfo'
-local git = require 'segments.git'
-local fs = require 'segments.filesystem'
-local network = require 'segments.network'
+local basics = require 'moontastic.segments.basics'
+local sysinfo = require 'moontastic.segments.sysinfo'
+local git = require 'moontastic.segments.git'
+local fs = require 'moontastic.segments.filesystem'
+local network = require 'moontastic.segments.network'
 
-local sys = require 'utils.sys'
+local sys = require 'moontastic.utils.sys'
 
 local Prompt = class('Prompt')
 

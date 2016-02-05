@@ -20,7 +20,7 @@
 -- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 -- SOFTWARE.
 
-local config = require 'config'
+local config = require 'moontastic.config'
 
 local glyph = {}
 
