@@ -20,47 +20,61 @@
 -- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 -- SOFTWARE.
 
-local class = require 'utils.middleclass'
+require 'moontastic.utils.table'
 
-local colors = require 'utils.colors'
-local sys = require 'utils.sys'
-local glyphs = require 'utils.glyphs'
-local theme = sys.get_current_theme()
+local class = require 'middleclass'
 
-local Segment = require 'segments.init'
+local u = require 'moontastic.utils.utf8'
+local colors = require 'moontastic.utils.colors'
 
-local sysinfo = {}
+local config = require 'moontastic.config'
 
-sysinfo.Time = class('Time', Segment)
-function sysinfo.Time:initialize(...)
+local Segment = class('Segment')
 
-	Segment.initialize(self, ...)
-	
-	self.bg = colors.background(theme.TIME_BG)
-	self.fg = colors.foreground(theme.TIME_FG)
+function Segment:initialize(...)
 
-end
+	local class_name = self.class.name:lower()
+	local names = table.set({'newline', 'root', 'divider', 'padding'})
 
-function sysinfo.Time:init()
+	if names[class_name] then
+		self.active = true
+	else
+		self.active = config.SEGMENTS[class_name] or false
+	end
 
-	self.text = glyphs.TIME .. ' ' .. os.date("%H:%M:%S")
-
-end
-
-sysinfo.UserAtHost = class('UserAtHost', Segment)
-function sysinfo.UserAtHost:initialize(...)
-
-	Segment.initialize(self, ...)
-	
-	self.bg = colors.background(theme.USERATHOST_BG)
-	self.fg = colors.foreground(theme.USERATHOST_FG)
+	if self.active then
+		self:init(...)
+	end
 
 end
 
-function sysinfo.UserAtHost:init()
+function Segment:init()
 
-	self.text = io.popen('whoami', 'r'):read() .. '@' .. sys.get_hostname()
+	--pass
 
 end
 
-return sysinfo
+function Segment:render()
+
+	local output = {}
+	table.insert(output, self.bg)
+	table.insert(output, self.fg)
+	table.insert(output, self.text)
+
+	if self.bg or self.fg then
+		table.insert(output, colors.reset())
+	else
+		table.insert(output, '')
+	end
+
+	return table.concat(output, '')
+
+end
+
+function Segment:length()
+
+	return u.len(self.text)
+
+end
+
+return Segment

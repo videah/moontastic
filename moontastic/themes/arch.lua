@@ -20,61 +20,45 @@
 -- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 -- SOFTWARE.
 
-require 'utils.table'
+local colors = require 'moontastic.utils.colors'
 
-local u = require 'utils.utf8'
+local theme = {}
 
-local class = require 'utils.middleclass'
-local colors = require 'utils.colors'
+-- Segments colors.
 
-local config = require 'config'
+theme.USERATHOST_BG = colors.BLUEISH
+theme.USERATHOST_FG = colors.WHITE
 
-local Segment = class('Segment')
+theme.SSH_BG = colors.LIGHT_ORANGE
+theme.SSH_FG = colors.WHITE
 
-function Segment:initialize(...)
+theme.CURRENTDIR_BG = colors.DARK_GREY
+theme.CURRENTDIR_FG = colors.LIGHT_GREY
 
-	local class_name = self.class.name:lower()
-	local names = table.set({'newline', 'root', 'divider', 'padding'})
+theme.READONLY_BG = colors.LIGHT_GREY
+theme.READONLY_FG = colors.RED
 
-	if names[class_name] then
-		self.active = true
-	else
-		self.active = config.SEGMENTS[class_name] or false
-	end
+theme.EXITCODE_BG = colors.RED
+theme.EXITCODE_FG = colors.WHITE
 
-	if self.active then
-		self:init(...)
-	end
+theme.PADDING_BG = colors.EXTRA_DARK_GREY
 
-end
+theme.GIT_UNTRACKED_FILES_BG = colors.PINKISH_RED
+theme.GIT_UNTRACKED_FILES_FG = colors.NEARLY_WHITE_GREY
+theme.GIT_CHANGES_NOT_STAGED_BG = colors.PINKISH_RED
+theme.GIT_CHANGES_NOT_STAGED_FG = colors.NEARLY_WHITE_GREY
+theme.GIT_ALL_CHANGES_STAGED_BG = colors.LIGHT_ORANGE
+theme.GIT_ALL_CHANGES_STAGED_FG = colors.DARKER_GREY
+theme.GIT_CLEAN_BG = colors.PISTACHIO
+theme.GIT_CLEAN_FG = colors.DARKER_GREY
 
-function Segment:init()
+theme.VENV_BG = colors.SMERALD
+theme.VENV_FG = colors.EXTRA_LIGHT_GREY
 
-	--pass
+theme.JOBS_BG = colors.DARK_PURPLE
+theme.JOBS_FG = colors.WHITE
 
-end
+theme.TIME_BG = colors.DARKER_GREY
+theme.TIME_FG = colors.MID_DARK_GREY
 
-function Segment:render()
-
-	local output = {}
-	table.insert(output, self.bg)
-	table.insert(output, self.fg)
-	table.insert(output, self.text)
-
-	if self.bg or self.fg then
-		table.insert(output, colors.reset())
-	else
-		table.insert(output, '')
-	end
-
-	return table.concat(output, '')
-
-end
-
-function Segment:length()
-
-	return u.len(self.text)
-
-end
-
-return Segment
+return theme

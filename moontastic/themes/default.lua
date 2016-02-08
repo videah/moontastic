@@ -20,52 +20,45 @@
 -- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 -- SOFTWARE.
 
-local config = require 'config'
+local colors = require 'moontastic.utils.colors'
 
-local glyph = {}
+local theme = {}
 
-glyph.DIVIDER_RIGHT_PATCHED = ''
-glyph.DIVIDER_RIGHT_SOFT_PATCHED = ''
-glyph.DIVIDER_LEFT_PATCHED = ''
-glyph.DIVIDER_LEFT_SOFT_PATCHED = ''
-glyph.BRANCH1_PATCHED = ''
+-- Segments colors.
 
-glyph.BRANCH2 = '⭃'
-glyph.TIME = '⌚'
-glyph.VIRTUAL_ENV = 'ⓥ'
-glyph.TIME =  '⌚'
-glyph.HOURGLASS = '⌛'
-glyph.CROSS = '✖'
-glyph.ESCLAMATION = '❕'
-glyph.LOCK = ''
-glyph.N1 = '➊'
-glyph.N2 = '➋'
-glyph.N3 = '➌'
-glyph.N4 = '➍'
-glyph.N5 = '➎'
-glyph.N6 = '➏'
-glyph.N7 = '➐'
-glyph.N8 = '➑'
-glyph.N9 = '➒'
-glyph.N10 = '➓'
-glyph.LEFT_ARROW = '⤎'
-glyph.RIGHT_ARROW = '⤏'
-glyph.PEN = ''
-glyph.SUNNY = '☀'
-glyph.CLOUDY = '☁'
-glyph.RAINY = '☂'
+theme.USERATHOST_BG = colors.SMERALD
+theme.USERATHOST_FG = colors.WHITE
 
--- Branch and divider glyphs are different depending on whether the current theme is using
--- patched fonts or not.
+theme.SSH_BG = colors.LIGHT_ORANGE
+theme.SSH_FG = colors.WHITE
 
-if config.PATCHED_FONTS then
-	glyph.BRANCH = glyph.BRANCH1_PATCHED
-	glyph.DIVIDER = glyph.DIVIDER_RIGHT_PATCHED
-	glyph.WRITE_ONLY = glyph.LOCK
-else
-	glyph.BRANCH = glyph.BRANCH2
-	glyph.DIVIDER = ''
-	glyph.WRITE_ONLY = glyph.PEN
-end
+theme.CURRENTDIR_BG = colors.DARK_GREY
+theme.CURRENTDIR_FG = colors.LIGHT_GREY
 
-return glyph
+theme.READONLY_BG = colors.LIGHT_GREY
+theme.READONLY_FG = colors.RED
+
+theme.EXITCODE_BG = colors.RED
+theme.EXITCODE_FG = colors.WHITE
+
+theme.PADDING_BG = colors.EXTRA_DARK_GREY
+
+theme.GIT_UNTRACKED_FILES_BG = colors.PINKISH_RED
+theme.GIT_UNTRACKED_FILES_FG = colors.NEARLY_WHITE_GREY
+theme.GIT_CHANGES_NOT_STAGED_BG = colors.PINKISH_RED
+theme.GIT_CHANGES_NOT_STAGED_FG = colors.NEARLY_WHITE_GREY
+theme.GIT_ALL_CHANGES_STAGED_BG = colors.LIGHT_ORANGE
+theme.GIT_ALL_CHANGES_STAGED_FG = colors.DARKER_GREY
+theme.GIT_CLEAN_BG = colors.PISTACHIO
+theme.GIT_CLEAN_FG = colors.DARKER_GREY
+
+theme.VENV_BG = colors.SMERALD
+theme.VENV_FG = colors.EXTRA_LIGHT_GREY
+
+theme.JOBS_BG = colors.DARK_PURPLE
+theme.JOBS_FG = colors.WHITE
+
+theme.TIME_BG = colors.DARKER_GREY
+theme.TIME_FG = colors.MID_DARK_GREY
+
+return theme

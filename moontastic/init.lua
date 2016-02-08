@@ -22,17 +22,22 @@
 -- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 -- SOFTWARE.
 
-require 'utils.table'
+if not arg or ... ~= '0' then 
+	print('Please don\'t require moontastic! It should only be executed by your shell!')
+	return
+end
 
-local class = require 'utils.middleclass'
+require 'moontastic.utils.table'
 
-local basics = require 'segments.basics'
-local sysinfo = require 'segments.sysinfo'
-local git = require 'segments.git'
-local fs = require 'segments.filesystem'
-local network = require 'segments.network'
+local class = require 'middleclass'
 
-local sys = require 'utils.sys'
+local basics = require 'moontastic.segments.basics'
+local sysinfo = require 'moontastic.segments.sysinfo'
+local git = require 'moontastic.segments.git'
+local fs = require 'moontastic.segments.filesystem'
+local network = require 'moontastic.segments.network'
+
+local sys = require 'moontastic.utils.sys'
 
 local Prompt = class('Prompt')
 

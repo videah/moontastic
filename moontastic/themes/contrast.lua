@@ -20,7 +20,7 @@
 -- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 -- SOFTWARE.
 
-local colors = require 'utils.colors'
+local colors = require 'moontastic.utils.colors'
 
 local theme = {}
 
@@ -32,7 +32,7 @@ theme.USERATHOST_FG = colors.WHITE
 theme.SSH_BG = colors.LIGHT_ORANGE
 theme.SSH_FG = colors.WHITE
 
-theme.CURRENTDIR_BG = colors.DARK_GREY
+theme.CURRENTDIR_BG = colors.MID_GREY
 theme.CURRENTDIR_FG = colors.LIGHT_GREY
 
 theme.READONLY_BG = colors.LIGHT_GREY
@@ -41,7 +41,7 @@ theme.READONLY_FG = colors.RED
 theme.EXITCODE_BG = colors.RED
 theme.EXITCODE_FG = colors.WHITE
 
-theme.PADDING_BG = colors.EXTRA_DARK_GREY
+theme.PADDING_BG = colors.DARKER_GREY
 
 theme.GIT_UNTRACKED_FILES_BG = colors.PINKISH_RED
 theme.GIT_UNTRACKED_FILES_FG = colors.NEARLY_WHITE_GREY
@@ -58,7 +58,7 @@ theme.VENV_FG = colors.EXTRA_LIGHT_GREY
 theme.JOBS_BG = colors.DARK_PURPLE
 theme.JOBS_FG = colors.WHITE
 
-theme.TIME_BG = colors.DARKER_GREY
-theme.TIME_FG = colors.MID_DARK_GREY
+theme.TIME_BG = colors.MID_GREY
+theme.TIME_FG = colors.LIGHT_GREY
 
 return theme

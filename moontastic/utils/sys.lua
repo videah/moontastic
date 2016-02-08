@@ -20,9 +20,10 @@
 -- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 -- SOFTWARE.
 
-require 'utils.string'
+require 'moontastic.utils.string'
 
-local config = require 'config'
+local config = require 'moontastic.config'
+
 local lfs = require 'lfs'
 
 local sys = {}
@@ -85,7 +86,7 @@ function sys.get_terminal_columns_n()
 end
 
 function sys.get_current_theme()
-	return require ('themes.' .. config.THEME)
+	return require ('moontastic.themes.' .. (os.getenv('MOONTHEME') or 'default'))
 end
 
 function sys.get_hostname()
