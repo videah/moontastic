@@ -1,4 +1,4 @@
-package = "moontastic"
+package = "moontastic-1.0.0"
 version = "1.0-0"
 source = {
 	url = "https://github.com/VideahGams/moontastic/archive/v1.0.0.tar.gz",
