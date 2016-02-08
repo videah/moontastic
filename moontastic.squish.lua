@@ -1,5 +1,5 @@
 #!/bin/env luajit
-package.preload['themes.arch'] = (function (...)
+package.preload['moontastic.themes.arch'] = (function (...)
 -- The MIT License (MIT)
 
 -- Copyright (c) 2016 Ruairidh Carmichael - ruairidhcarmichael@live.co.uk
@@ -22,7 +22,7 @@ package.preload['themes.arch'] = (function (...)
 -- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 -- SOFTWARE.
 
-local colors = require 'utils.colors'
+local colors = require 'moontastic.utils.colors'
 
 local theme = {}
 
@@ -64,7 +64,7 @@ theme.TIME_BG = colors.DARKER_GREY
 theme.TIME_FG = colors.MID_DARK_GREY
 
 return theme end)
-package.preload['config'] = (function (...)
+package.preload['moontastic.config'] = (function (...)
 -- The MIT License (MIT)
 
 -- Copyright (c) 2016 Ruairidh Carmichael - ruairidhcarmichael@live.co.uk
@@ -96,11 +96,6 @@ local config = {}
 -- True if the current terminal is using patched fonts (available at:
 -- https://github.com/Lokaltog/powerline-fonts).
 config.PATCHED_FONTS = true
-
--- The theme defines the colors used to draw individual segments.
--- Themes are collected in the `themes` directory. Their names match their file name (w/o the file
--- extension .lua).
-config.THEME = 'arch'
 
 -- Segments are the single elements which compose the Bash shell prompt.
 -- Enable or disable these segments to customize what you see on the shell prompt.
@@ -134,186 +129,7 @@ config.SEGMENTS = {
 }
 
 return config end)
-package.preload['utils.middleclass'] = (function (...)
-local middleclass = {
-  _VERSION     = 'middleclass v4.0.0',
-  _DESCRIPTION = 'Object Orientation for Lua',
-  _URL         = 'https://github.com/kikito/middleclass',
-  _LICENSE     = [[
-    MIT LICENSE
-
-    Copyright (c) 2011 Enrique García Cota
-
-    Permission is hereby granted, free of charge, to any person obtaining a
-    copy of this software and associated documentation files (the
-    "Software"), to deal in the Software without restriction, including
-    without limitation the rights to use, copy, modify, merge, publish,
-    distribute, sublicense, and/or sell copies of the Software, and to
-    permit persons to whom the Software is furnished to do so, subject to
-    the following conditions:
-
-    The above copyright notice and this permission notice shall be included
-    in all copies or substantial portions of the Software.
-
-    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-    OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-    IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-    CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-    TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-    SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-  ]]
-}
-
-local function _createIndexWrapper(aClass, f)
-  if f == nil then
-    return aClass.__instanceDict
-  else
-    return function(self, name)
-      local value = aClass.__instanceDict[name]
-
-      if value ~= nil then
-        return value
-      elseif type(f) == "function" then
-        return (f(self, name))
-      else
-        return f[name]
-      end
-    end
-  end
-end
-
-local function _propagateInstanceMethod(aClass, name, f)
-  f = name == "__index" and _createIndexWrapper(aClass, f) or f
-  aClass.__instanceDict[name] = f
-
-  for subclass in pairs(aClass.subclasses) do
-    if rawget(subclass.__declaredMethods, name) == nil then
-      _propagateInstanceMethod(subclass, name, f)
-    end
-  end
-end
-
-local function _declareInstanceMethod(aClass, name, f)
-  aClass.__declaredMethods[name] = f
-
-  if f == nil and aClass.super then
-    f = aClass.super.__instanceDict[name]
-  end
-
-  _propagateInstanceMethod(aClass, name, f)
-end
-
-local function _tostring(self) return "class " .. self.name end
-local function _call(self, ...) return self:new(...) end
-
-local function _createClass(name, super)
-  local dict = {}
-  dict.__index = dict
-
-  local aClass = { name = name, super = super, static = {},
-                   __instanceDict = dict, __declaredMethods = {},
-                   subclasses = setmetatable({}, {__mode='k'})  }
-
-  if super then
-    setmetatable(aClass.static, { __index = function(_,k) return rawget(dict,k) or super.static[k] end })
-  else
-    setmetatable(aClass.static, { __index = function(_,k) return rawget(dict,k) end })
-  end
-
-  setmetatable(aClass, { __index = aClass.static, __tostring = _tostring,
-                         __call = _call, __newindex = _declareInstanceMethod })
-
-  return aClass
-end
-
-local function _includeMixin(aClass, mixin)
-  assert(type(mixin) == 'table', "mixin must be a table")
-
-  for name,method in pairs(mixin) do
-    if name ~= "included" and name ~= "static" then aClass[name] = method end
-  end
-
-  for name,method in pairs(mixin.static or {}) do
-    aClass.static[name] = method
-  end
-
-  if type(mixin.included)=="function" then mixin:included(aClass) end
-  return aClass
-end
-
-local DefaultMixin = {
-  __tostring   = function(self) return "instance of " .. tostring(self.class) end,
-
-  initialize   = function(self, ...) end,
-
-  isInstanceOf = function(self, aClass)
-    return type(self)       == 'table' and
-           type(self.class) == 'table' and
-           type(aClass)     == 'table' and
-           ( aClass == self.class or
-             type(aClass.isSubclassOf) == 'function' and
-             self.class:isSubclassOf(aClass) )
-  end,
-
-  static = {
-    allocate = function(self)
-      assert(type(self) == 'table', "Make sure that you are using 'Class:allocate' instead of 'Class.allocate'")
-      return setmetatable({ class = self }, self.__instanceDict)
-    end,
-
-    new = function(self, ...)
-      assert(type(self) == 'table', "Make sure that you are using 'Class:new' instead of 'Class.new'")
-      local instance = self:allocate()
-      instance:initialize(...)
-      return instance
-    end,
-
-    subclass = function(self, name)
-      assert(type(self) == 'table', "Make sure that you are using 'Class:subclass' instead of 'Class.subclass'")
-      assert(type(name) == "string", "You must provide a name(string) for your class")
-
-      local subclass = _createClass(name, self)
-
-      for methodName, f in pairs(self.__instanceDict) do
-        _propagateInstanceMethod(subclass, methodName, f)
-      end
-      subclass.initialize = function(instance, ...) return self.initialize(instance, ...) end
-
-      self.subclasses[subclass] = true
-      self:subclassed(subclass)
-
-      return subclass
-    end,
-
-    subclassed = function(self, other) end,
-
-    isSubclassOf = function(self, other)
-      return type(other)      == 'table' and
-             type(self)       == 'table' and
-             type(self.super) == 'table' and
-             ( self.super == other or
-               type(self.super.isSubclassOf) == 'function' and
-               self.super:isSubclassOf(other) )
-    end,
-
-    include = function(self, ...)
-      assert(type(self) == 'table', "Make sure you that you are using 'Class:include' instead of 'Class.include'")
-      for _,mixin in ipairs({...}) do _includeMixin(self, mixin) end
-      return self
-    end
-  }
-}
-
-function middleclass.class(name, super)
-  assert(type(name) == 'string', "A name (string) is needed for the new class")
-  return super and super:subclass(name) or _includeMixin(_createClass(name), DefaultMixin)
-end
-
-setmetatable(middleclass, { __call = function(_, ...) return middleclass.class(...) end })
-
-return middleclass end)
-package.preload['utils.sys'] = (function (...)
+package.preload['moontastic.utils.sys'] = (function (...)
 -- The MIT License (MIT)
 
 -- Copyright (c) 2016 Ruairidh Carmichael - ruairidhcarmichael@live.co.uk
@@ -336,9 +152,10 @@ package.preload['utils.sys'] = (function (...)
 -- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 -- SOFTWARE.
 
-require 'utils.string'
+require 'moontastic.utils.string'
 
-local config = require 'config'
+local config = require 'moontastic.config'
+
 local lfs = require 'lfs'
 
 local sys = {}
@@ -401,7 +218,7 @@ function sys.get_terminal_columns_n()
 end
 
 function sys.get_current_theme()
-	return require ('themes.' .. config.THEME)
+	return require ('moontastic.themes.' .. (os.getenv('MOONTHEME') or 'default'))
 end
 
 function sys.get_hostname()
@@ -415,7 +232,7 @@ function sys.get_hostname()
 end
 
 return sys end)
-package.preload['utils.colors'] = (function (...)
+package.preload['moontastic.utils.colors'] = (function (...)
 -- The MIT License (MIT)
 
 -- Copyright (c) 2016 Ruairidh Carmichael - ruairidhcarmichael@live.co.uk
@@ -504,7 +321,7 @@ function colors.underline_end()
 end
 
 return colors end)
-package.preload['utils.glyphs'] = (function (...)
+package.preload['moontastic.utils.glyphs'] = (function (...)
 -- The MIT License (MIT)
 
 -- Copyright (c) 2016 Ruairidh Carmichael - ruairidhcarmichael@live.co.uk
@@ -527,7 +344,7 @@ package.preload['utils.glyphs'] = (function (...)
 -- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 -- SOFTWARE.
 
-local config = require 'config'
+local config = require 'moontastic.config'
 
 local glyph = {}
 
@@ -576,7 +393,7 @@ else
 end
 
 return glyph end)
-package.preload['utils.table'] = (function (...)
+package.preload['moontastic.utils.table'] = (function (...)
 -- The MIT License (MIT)
 
 -- Copyright (c) 2016 Ruairidh Carmichael - ruairidhcarmichael@live.co.uk
@@ -617,7 +434,7 @@ function table.sum(t)
 
 	return sum
 end end)
-package.preload['utils.string'] = (function (...)
+package.preload['moontastic.utils.string'] = (function (...)
 -- The MIT License (MIT)
 
 -- Copyright (c) 2016 Ruairidh Carmichael - ruairidhcarmichael@live.co.uk
@@ -667,7 +484,7 @@ end
 function string.basename(str)
 	return string.gsub(str, "(.*/)(.*)", "%2")
 end end)
-package.preload['utils.regex'] = (function (...)
+package.preload['moontastic.utils.regex'] = (function (...)
 -- luaregex.lua  ver.130911
 --    A true, python-like regular expression for Lua
 --
@@ -2707,7 +2524,7 @@ end
 
 -- export re
 return re end)
-package.preload['utils.utf8'] = (function (...)
+package.preload['moontastic.utils.utf8'] = (function (...)
 -- modified for partial compatibility with Lua 5.3
 
 --utf8 module (Cosmin Apreutesei, public domain).
@@ -3047,7 +2864,7 @@ end
 utf8.codes = utf8.byte_indices
 
 return utf8 end)
-package.preload['segments.init'] = (function (...)
+package.preload['moontastic.segments.init'] = (function (...)
 -- The MIT License (MIT)
 
 -- Copyright (c) 2016 Ruairidh Carmichael - ruairidhcarmichael@live.co.uk
@@ -3070,14 +2887,14 @@ package.preload['segments.init'] = (function (...)
 -- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 -- SOFTWARE.
 
-require 'utils.table'
+require 'moontastic.utils.table'
 
-local u = require 'utils.utf8'
+local class = require 'middleclass'
 
-local class = require 'utils.middleclass'
-local colors = require 'utils.colors'
+local u = require 'moontastic.utils.utf8'
+local colors = require 'moontastic.utils.colors'
 
-local config = require 'config'
+local config = require 'moontastic.config'
 
 local Segment = class('Segment')
 
@@ -3128,7 +2945,7 @@ function Segment:length()
 end
 
 return Segment end)
-package.preload['segments.git'] = (function (...)
+package.preload['moontastic.segments.git'] = (function (...)
 -- The MIT License (MIT)
 
 -- Copyright (c) 2016 Ruairidh Carmichael - ruairidhcarmichael@live.co.uk
@@ -3151,17 +2968,16 @@ package.preload['segments.git'] = (function (...)
 -- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 -- SOFTWARE.
 
-require 'utils.string'
+require 'moontastic.utils.string'
 
-local class = require 'utils.middleclass'
+local class = require 'middleclass'
 
-local colors = require 'utils.colors'
-local sys = require 'utils.sys'
-local glyphs = require 'utils.glyphs'
-local re = require 'utils.regex'
+local colors = require 'moontastic.utils.colors'
+local sys = require 'moontastic.utils.sys'
+local glyphs = require 'moontastic.utils.glyphs'
 local theme = sys.get_current_theme()
 
-local Segment = require 'segments.init'
+local Segment = require 'moontastic.segments.init'
 
 local git = {}
 
@@ -3320,7 +3136,7 @@ function git.Git:get_current_commit_decoration_text()
 end
 
 return git end)
-package.preload['segments.sysinfo'] = (function (...)
+package.preload['moontastic.segments.sysinfo'] = (function (...)
 -- The MIT License (MIT)
 
 -- Copyright (c) 2016 Ruairidh Carmichael - ruairidhcarmichael@live.co.uk
@@ -3343,14 +3159,14 @@ package.preload['segments.sysinfo'] = (function (...)
 -- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 -- SOFTWARE.
 
-local class = require 'utils.middleclass'
+local class = require 'middleclass'
 
-local colors = require 'utils.colors'
-local sys = require 'utils.sys'
-local glyphs = require 'utils.glyphs'
+local colors = require 'moontastic.utils.colors'
+local sys = require 'moontastic.utils.sys'
+local glyphs = require 'moontastic.utils.glyphs'
 local theme = sys.get_current_theme()
 
-local Segment = require 'segments.init'
+local Segment = require 'moontastic.segments.init'
 
 local sysinfo = {}
 
@@ -3387,7 +3203,7 @@ function sysinfo.UserAtHost:init()
 end
 
 return sysinfo end)
-package.preload['segments.basics'] = (function (...)
+package.preload['moontastic.segments.basics'] = (function (...)
 -- The MIT License (MIT)
 
 -- Copyright (c) 2016 Ruairidh Carmichael - ruairidhcarmichael@live.co.uk
@@ -3410,17 +3226,17 @@ package.preload['segments.basics'] = (function (...)
 -- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 -- SOFTWARE.
 
-require 'utils.string'
+require 'moontastic.utils.string'
 
-local class = require 'utils.middleclass'
+local class = require 'middleclass'
 
-local colors = require 'utils.colors'
-local glyphs = require 'utils.glyphs'
-local sys = require 'utils.sys'
+local colors = require 'moontastic.utils.colors'
+local glyphs = require 'moontastic.utils.glyphs'
+local sys = require 'moontastic.utils.sys'
 
 local theme = sys.get_current_theme()
 
-local Segment = require 'segments.init'
+local Segment = require 'moontastic.segments.init'
 
 local basics = {}
 
@@ -3492,7 +3308,7 @@ function basics.Padding:init(amount)
 end
 
 return basics end)
-package.preload['segments.filesystem'] = (function (...)
+package.preload['moontastic.segments.filesystem'] = (function (...)
 -- The MIT License (MIT)
 
 -- Copyright (c) 2016 Ruairidh Carmichael - ruairidhcarmichael@live.co.uk
@@ -3515,18 +3331,18 @@ package.preload['segments.filesystem'] = (function (...)
 -- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 -- SOFTWARE.
 
-require 'utils.string'
+require 'moontastic.utils.string'
 
-local class = require 'utils.middleclass'
+local class = require 'middleclass'
 local lfs = require 'lfs'
 local p = require 'posix.unistd'
 
-local colors = require 'utils.colors'
-local sys = require 'utils.sys'
-local glyphs = require 'utils.glyphs'
+local colors = require 'moontastic.utils.colors'
+local sys = require 'moontastic.utils.sys'
+local glyphs = require 'moontastic.utils.glyphs'
 local theme = sys.get_current_theme()
 
-local Segment = require 'segments.init'
+local Segment = require 'moontastic.segments.init'
 
 local fs = {}
 
@@ -3591,7 +3407,7 @@ function fs.Venv:init(...)
 end
 
 return fs end)
-package.preload['segments.network'] = (function (...)
+package.preload['moontastic.segments.network'] = (function (...)
 -- The MIT License (MIT)
 
 -- Copyright (c) 2016 Ruairidh Carmichael - ruairidhcarmichael@live.co.uk
@@ -3614,13 +3430,13 @@ package.preload['segments.network'] = (function (...)
 -- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 -- SOFTWARE.
 
-local class = require 'utils.middleclass'
+local class = require 'middleclass'
 
-local colors = require 'utils.colors'
-local sys = require 'utils.sys'
+local colors = require 'moontastic.utils.colors'
+local sys = require 'moontastic.utils.sys'
 local theme = sys.get_current_theme()
 
-local Segment = require 'segments.init'
+local Segment = require 'moontastic.segments.init'
 
 local network = {}
 
@@ -3668,17 +3484,22 @@ return network end)
 -- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 -- SOFTWARE.
 
-require 'utils.table'
+if not arg or ... ~= '0' then 
+	print('Please don\'t require moontastic! It should only be executed by your shell!')
+	return
+end
 
-local class = require 'utils.middleclass'
+require 'moontastic.utils.table'
 
-local basics = require 'segments.basics'
-local sysinfo = require 'segments.sysinfo'
-local git = require 'segments.git'
-local fs = require 'segments.filesystem'
-local network = require 'segments.network'
+local class = require 'middleclass'
 
-local sys = require 'utils.sys'
+local basics = require 'moontastic.segments.basics'
+local sysinfo = require 'moontastic.segments.sysinfo'
+local git = require 'moontastic.segments.git'
+local fs = require 'moontastic.segments.filesystem'
+local network = require 'moontastic.segments.network'
+
+local sys = require 'moontastic.utils.sys'
 
 local Prompt = class('Prompt')
 

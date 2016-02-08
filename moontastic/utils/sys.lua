@@ -86,7 +86,7 @@ function sys.get_terminal_columns_n()
 end
 
 function sys.get_current_theme()
-	return require ('moontastic.themes.' .. config.THEME)
+	return require ('moontastic.themes.' .. (os.getenv('MOONTHEME') or 'default'))
 end
 
 function sys.get_hostname()

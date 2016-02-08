@@ -30,11 +30,6 @@ local config = {}
 -- https://github.com/Lokaltog/powerline-fonts).
 config.PATCHED_FONTS = true
 
--- The theme defines the colors used to draw individual segments.
--- Themes are collected in the `themes` directory. Their names match their file name (w/o the file
--- extension .lua).
-config.THEME = 'arch'
-
 -- Segments are the single elements which compose the Bash shell prompt.
 -- Enable or disable these segments to customize what you see on the shell prompt.
 config.SEGMENTS = {

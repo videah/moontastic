@@ -22,6 +22,11 @@
 -- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 -- SOFTWARE.
 
+if not arg or ... ~= '0' then 
+	print('Please don\'t require moontastic! It should only be executed by your shell!')
+	return
+end
+
 require 'moontastic.utils.table'
 
 local class = require 'middleclass'
