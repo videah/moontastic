@@ -1,8 +1,8 @@
-package = "moontastic-1.0.0"
+package = "moontastic"
 version = "1.0-0"
 source = {
 	url = "https://github.com/VideahGams/moontastic/archive/v1.0.0.tar.gz",
-	dir = "moontastic",
+	dir = "moontastic-1.0.0",
 }
 description = {
 	summary = "Powerful bash prompt ported to Lua from Python",
