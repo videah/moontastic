@@ -1,7 +1,7 @@
 package = "moontastic"
 version = "1.0-0"
 source = {
-	url = "https://dl.dropboxusercontent.com/u/63986250/moontastic-1.0.0.tar.gz",
+	url = "https://github.com/VideahGams/moontastic/archive/v1.0.0.tar.gz",
 	dir = "moontastic",
 }
 description = {
