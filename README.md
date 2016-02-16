@@ -4,7 +4,7 @@
 	<img src="https://i.imgur.com/EampSuQ.png"/>
 </p>
 
-*Moontastic* is a port of [Promptastic]() to Lua, giving a significant speed boost. 
+*Moontastic* is a port of [Promptastic](https://github.com/nimiq/promptastic) to Lua, giving a significant speed boost. 
 
 It's only been tested on Linux with Bash, but it might work with Mac OSX and other shells with some tweaking.
 
@@ -12,7 +12,7 @@ By default, LuaJIT is used for the most speed.
 
 # Installing
 
-There are two ways to install Moontastic, the first and easiest way is via [LuaRocks.](lua.rocks)
+There are two ways to install Moontastic, the first and easiest way is via [LuaRocks.](http://lua.rocks)
 
 `luarocks install moontastic`
 
